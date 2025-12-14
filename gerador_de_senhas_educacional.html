@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Senhas (Educacional)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#0f172a; color:#e5e7eb; margin:0; padding:20px; }
+    .card { max-width:900px; margin:auto; background:#020617; border-radius:12px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.4);} 
+    h1 { font-size:28px; margin-bottom:10px; }
+    p { color:#9ca3af; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:16px; }
+    label { display:block; margin-bottom:6px; }
+    select, input, button { width:100%; padding:10px; border-radius:8px; border:1px solid #1f2933; background:#020617; color:#e5e7eb; }
+    button { background:#2563eb; border:none; cursor:pointer; font-weight:bold; }
+    button.secondary { background:#334155; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    textarea { width:100%; min-height:220px; margin-top:12px; background:#020617; color:#e5e7eb; border-radius:8px; border:1px solid #1f2933; padding:10px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+    .hint { font-size:12px; color:#9ca3af; }
+    footer { margin-top:16px; font-size:12px; color:#94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔐 Gerador de Senhas (Uso Educacional)</h1>
+    <p>Gere listas de senhas para <strong>teste de força</strong> e <strong>defesa</strong>. Uma senha por linha.</p>
+
+    <div class="grid">
+      <div>
+        <label>Tipo de senha</label>
+        <select id="tipo">
+          <option value="numeros">Somente números</option>
+          <option value="alfaNum">Letras + números</option>
+          <option value="binario">Binário (0 e 1)</option>
+        </select>
+      </div>
+      <div>
+        <label>Quantidade</label>
+        <input id="qtd" type="number" value="10000" min="1" max="50000" />
+        <div class="hint">Limite local para não travar o navegador</div>
+      </div>
+      <div>
+        <label>Tamanho da senha</label>
+        <input id="len" type="number" value="12" min="4" max="64" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:16px;">
+      <button id="gerar">Gerar</button>
+      <button id="baixar" class="secondary" disabled>Baixar .txt</button>
+      <button id="limpar" class="secondary">Limpar</button>
+    </div>
+
+    <textarea id="saida" placeholder="As senhas aparecerão aqui..."></textarea>
+
+    <footer>
+      ⚠️ Use apenas em sistemas próprios, laboratórios e estudo. Não há 'lista que quebra tudo'.
+    </footer>
+  </div>
+
+  <script>
+    const tipo = document.getElementById('tipo');
+    const qtd = document.getElementById('qtd');
+    const len = document.getElementById('len');
+    const gerarBtn = document.getElementById('gerar');
+    const baixarBtn = document.getElementById('baixar');
+    const limparBtn = document.getElementById('limpar');
+    const saida = document.getElementById('saida');
+
+    function randChar(chars) {
+      const i = Math.floor(Math.random() * chars.length);
+      return chars[i];
+    }
+
+    function gerarSenha(tipo, tamanho) {
+      let chars = '';
+      if (tipo === 'numeros') chars = '0123456789';
+      if (tipo === 'alfaNum') chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      if (tipo === 'binario') chars = '01';
+      let s = '';
+      for (let i = 0; i < tamanho; i++) s += randChar(chars);
+      return s;
+    }
+
+    gerarBtn.onclick = () => {
+      const n = Math.min(parseInt(qtd.value || '0', 10), 50000);
+      const l = parseInt(len.value || '0', 10);
+      if (!n || !l) return alert('Quantidade e tamanho inválidos');
+      let linhas = [];
+      for (let i = 0; i < n; i++) linhas.push(gerarSenha(tipo.value, l));
+      saida.value = linhas.join('\n');
+      baixarBtn.disabled = false;
+    };
+
+    baixarBtn.onclick = () => {
+      const blob = new Blob([saida.value], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'senhas_geradas.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    limparBtn.onclick = () => {
+      saida.value = '';
+      baixarBtn.disabled = true;
+    };
+  </script>
+</body>
+</html>

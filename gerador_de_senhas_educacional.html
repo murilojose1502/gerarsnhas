@@ -75,9 +75,9 @@
 
     function gerarSenha(tipo, tamanho) {
       let chars = '';
-      if (tipo === 'numeros') chars = '01234567891011121314151698548154875696425';
+      if (tipo === 'numeros') chars = '0123456789';
       if (tipo === 'alfaNum') chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      if (tipo === 'binario') chars = '0123456789qwertyuiopasdfghjklçzxcvbnmQWERTYUIOPASDFGHJKLÇZXCVBNM';
+      if (tipo === 'binario') chars = '01';
       let s = '';
       for (let i = 0; i < tamanho; i++) s += randChar(chars);
       return s;
